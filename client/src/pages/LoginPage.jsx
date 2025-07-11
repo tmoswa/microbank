@@ -51,7 +51,7 @@ function LoginPage() {
 
                 <input
                     type="text"
-                    placeholder="Username"
+                    placeholder="Email"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     className="w-full mb-3 p-2 border rounded"

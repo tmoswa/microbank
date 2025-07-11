@@ -9,8 +9,8 @@ function AdminPanelPage() {
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
 
-    const stored = localStorage.getItem('token');
-    const token = stored ? JSON.parse(stored).token : null;
+    const token = localStorage.getItem('token');
+    //const token = stored ? JSON.parse(stored).token : null;
 
 
     useEffect(() => {

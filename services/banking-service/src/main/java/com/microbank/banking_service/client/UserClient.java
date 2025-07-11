@@ -1,10 +1,11 @@
-// com.microbank.banking_service.client.UserClient.java
 package com.microbank.banking_service.client;
 
 import com.microbank.banking_service.dto.UserDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 
 @FeignClient(

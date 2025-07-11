@@ -54,7 +54,16 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
   rabbitmq:
-    host: rabbitmq
+    host: rabbitmq # IMPORTANT when running in Docker
     port: 5672
     username: guest
     password: guest
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    com.microbank: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
+    org.springframework.amqp: DEBUG

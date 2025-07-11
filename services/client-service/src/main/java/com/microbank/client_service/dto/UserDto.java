@@ -7,8 +7,8 @@ import lombok.Setter;
 @Getter
 public class UserDto {
     private Long id;
-    private String username;
     private String email;
+    private String username;
     private boolean blacklisted;
 
     public UserDto() {}

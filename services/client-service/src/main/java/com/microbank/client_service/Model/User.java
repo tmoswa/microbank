@@ -14,13 +14,14 @@ public class User {
     private String fullname;
 
     @Column(unique = true)
-    private String username;
-
-    @Column(unique = true)
     private String email;
 
+    @Column(unique = true)
+    private String username;
+
+
     private String password;
-    private String role; // "client" or "admin"
+    private String role;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

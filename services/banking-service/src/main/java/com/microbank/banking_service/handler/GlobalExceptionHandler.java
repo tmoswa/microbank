@@ -14,8 +14,8 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(BlacklistedClientException.class)
-    public ResponseEntity<Map<String, Object>> handleBlacklistedClientException(BlacklistedClientException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of(
+    public ResponseEntity<?> handleBlacklisted(BlacklistedClientException ex) {
+        return ResponseEntity.status(403).body(Map.of(
                 "success", false,
                 "message", ex.getMessage()
         ));

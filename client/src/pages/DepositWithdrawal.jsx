@@ -8,8 +8,8 @@ function DepositWithdrawal() {
     const [isError, setIsError] = useState(false);  // track error state
     const navigate = useNavigate();
 
-    const stored = localStorage.getItem('token');
-    const token = stored ? JSON.parse(stored).token : null;
+    const token = localStorage.getItem('token');
+    //const token = stored ? JSON.parse(stored).token : null;
 
     const handleTransaction = async (type) => {
         try {
@@ -81,7 +81,7 @@ function DepositWithdrawal() {
                 </div>
 
                 {message && (
-                    <div className={`mt-4 text-center text-sm font-semibold ${isError ? 'text-red-600' : 'text-green-600'}`}>
+                    <div className={`mt-4 text-center text-sm font-semibold ${isError ? 'text-green-600' : 'text-red-600'}`}>
                         {message}
                     </div>
                 )}

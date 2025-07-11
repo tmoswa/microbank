@@ -11,12 +11,12 @@ public class RegistrationRequest {
     private String fullname;
 
     // Getters and setters
-    @NotBlank(message = "Username is required.")
-    private String username;
-
     @NotBlank(message = "Email is required.")
     @Email(message = "Invalid email format.")
     private String email;
+
+    @NotBlank(message = "Username is required.")
+    private String username;
 
     @NotBlank(message = "Password is required.")
     @Pattern(

@@ -1,5 +1,6 @@
 package com.microbank.banking_service;
 
+import com.microbank.banking_service.dto.BlacklistStatusMessage;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 import com.microbank.banking_service.service.AccountService;
@@ -13,8 +14,18 @@ public class BlacklistListener {
     }
 
     @RabbitListener(queues = "blacklist-queue")
-    public void handleBlacklistEvent(Long clientId) {
-        accountService.blacklistClient(clientId);
-        System.out.println("Blacklisted client ID: " + clientId);
+    @RabbitListener(queues = RabbitMQConfig.BLACKLIST_QUEUE)
+    public void handleBlacklistEvent(BlacklistStatusMessage message) {
+        Long clientId = message.getClientId();
+        boolean isBlacklisted = message.isBlacklisted();
+
+        if (isBlacklisted) {
+            accountService.blacklistClient(clientId);
+        } else {
+            accountService.removeFromBlacklist(clientId);
+        }
+
+        System.out.println("Received blacklist update: clientId=" + clientId + ", blacklisted=" + isBlacklisted);
     }
+
 }

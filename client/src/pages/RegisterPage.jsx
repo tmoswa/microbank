@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 
 function RegisterPage() {
-    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [fullname, setFullname] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -18,7 +17,6 @@ function RegisterPage() {
         const errs = {};
         if (!fullname) errs.fullname = "Full name is required.";
         if (!email || !/\S+@\S+\.\S+/.test(email)) errs.email = "Valid email required.";
-        if (!username) errs.username = "Username is required.";
         if (!password.match(/^(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/)) {
             errs.password = "Password must be at least 6 characters, include a number and a special character.";
         }
@@ -36,7 +34,7 @@ function RegisterPage() {
             const res = await fetch(`${import.meta.env.VITE_CLIENT_API}/api/clients/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ fullname, email, username, password, blacklisted })
+                body: JSON.stringify({ fullname, email, username: email, password, blacklisted })
             });
 
             const contentType = res.headers.get("content-type");
@@ -64,8 +62,6 @@ function RegisterPage() {
         }
     };
 
-
-
     return (
         <div className="h-screen flex items-center justify-center bg-gray-100">
             <div className="w-full max-w-md bg-white p-8 rounded shadow">
@@ -87,15 +83,6 @@ function RegisterPage() {
                     className="w-full mb-3 p-2 border rounded"
                 />
                 {errors.email && <p className="text-sm text-red-500 mb-2">{errors.email}</p>}
-
-                <input
-                    type="text"
-                    placeholder="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="w-full mb-3 p-2 border rounded"
-                />
-                {errors.username && <p className="text-sm text-red-500 mb-2">{errors.username}</p>}
 
                 <input
                     type="password"
@@ -122,6 +109,11 @@ function RegisterPage() {
                 >
                     Register
                 </button>
+
+                <p className="text-sm mt-4 text-center">
+                    Already have an account?
+                    <a href="/" className="text-blue-600 underline ml-1">Login here</a>
+                </p>
             </div>
         </div>
     );

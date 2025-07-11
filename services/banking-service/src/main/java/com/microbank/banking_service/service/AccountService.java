@@ -38,6 +38,10 @@ public class AccountService {
         System.out.println("Client blacklisted: " + clientId);
     }
 
+    public void removeFromBlacklist(Long clientId) {
+        blacklistedClients.remove(clientId);
+    }
+
     public boolean isBlacklisted(Long clientId) {
         return blacklistedClients.contains(clientId);
     }
@@ -61,8 +65,6 @@ public class AccountService {
     }
 
 
-
-
     public List<Transaction> getTransactionHistory(String email) {
         Account account = getClientAccount(email);
         return transactionRepo.findByAccountIdOrderByTimestampDesc(account.getId());
@@ -74,9 +76,12 @@ public class AccountService {
         Account account = getClientAccount(email);
         UserDto user = userClient.getUserByEmail(email);
 
-        if (user.isBlacklisted()) {
-            throw new BlacklistedClientException();
+        Long clientId = user.getId();
+
+        if (isBlacklisted(clientId)) {
+            throw new BlacklistedClientException("Transaction blocked: you are blacklisted.");
         }
+
 
         if (type == TransactionType.WITHDRAWAL && account.getBalance() < amount) {
             throw new InsufficientBalanceException();

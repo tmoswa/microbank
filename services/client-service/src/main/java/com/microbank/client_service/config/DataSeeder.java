@@ -17,11 +17,12 @@ public class DataSeeder {
         return args -> {
             if (userRepository.findByUsername("admin").isEmpty()) {
                 User admin = new User();
+                admin.setEmail("admin@microbank.com");
+                admin.setFullname("Dr Administrator");
                 admin.setUsername("admin");
                 admin.setPassword(passwordEncoder.encode("admin123"));
                 admin.setRole("admin");
                 userRepository.save(admin);
-                System.out.println("Admin user seeded.");
             }
         };
     }

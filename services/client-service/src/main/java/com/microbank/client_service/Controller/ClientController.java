@@ -1,6 +1,7 @@
 package com.microbank.client_service.controller;
 
 import com.microbank.client_service.RabbitMQConfig;
+import com.microbank.client_service.dto.BlacklistStatusMessage;
 import com.microbank.client_service.dto.RegistrationRequest;
 import com.microbank.client_service.dto.UserDto;
 import com.microbank.client_service.model.Client;
@@ -40,23 +41,36 @@ public class ClientController {
     }
 
     @PutMapping("/{id}/blacklist")
-    public Client toggleBlacklist(@PathVariable Long id) {
+    public ResponseEntity<?> toggleBlacklist(@PathVariable Long id) {
         Client client = clientRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Client not found"));
+
         client.setBlacklisted(!client.isBlacklisted());
-        return clientRepository.save(client);
+        Client updated = clientRepository.save(client);
+
+        // Always send blacklist update event
+        BlacklistStatusMessage message = new BlacklistStatusMessage(updated.getId(), updated.isBlacklisted());
+
+        rabbitTemplate.convertAndSend(
+                RabbitMQConfig.BLACKLIST_EXCHANGE,
+                RabbitMQConfig.BLACKLIST_ROUTING_KEY,
+                message
+        );
+
+        return ResponseEntity.ok(Map.of("blacklisted", updated.isBlacklisted()));
     }
+
+
 
     @PostMapping("/register")
     public ResponseEntity<?> registerClient(@Valid @RequestBody RegistrationRequest request) {
 
-        if (userRepository.existsByUsername(request.getUsername())) {
-            return ResponseEntity.badRequest().body(Map.of("errors", Map.of("username", "Username is already taken.")));
-        }
-
         if (userRepository.existsByEmail(request.getEmail())) {
             return ResponseEntity.badRequest().body(Map.of("errors", Map.of("email", "Email is already taken.")));
         }
+//        if (userRepository.existsByUsername(request.getUsername())) {
+//            return ResponseEntity.badRequest().body(Map.of("errors", Map.of("username", "Username is already taken.")));
+//        }
 
         User user = new User();
         user.setFullname(request.getFullname());
@@ -70,15 +84,7 @@ public class ClientController {
         Client client = new Client();
         client.setBlacklisted(request.isBlacklisted());
         client.setUser(savedUser);
-        Client savedClient = clientRepository.save(client);
-
-        if (savedClient.isBlacklisted()) {
-            rabbitTemplate.convertAndSend(
-                    RabbitMQConfig.BLACKLIST_EXCHANGE,
-                    RabbitMQConfig.BLACKLIST_ROUTING_KEY,
-                    savedClient.getId()
-            );
-        }
+        clientRepository.save(client);
 
         return ResponseEntity.ok(Map.of("message", "Registration successful, you can login to transact!"));
     }
@@ -109,5 +115,8 @@ public class ClientController {
         UserDto dto = new UserDto(user.getId(),user.getEmail(), user.getUsername(), client.isBlacklisted());
         return ResponseEntity.ok(dto);
     }
+
+
+
 
 }

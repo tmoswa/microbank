@@ -3,6 +3,7 @@ package com.microbank.banking_service.service;
 import com.microbank.banking_service.client.UserClient;
 import com.microbank.banking_service.dto.UserDto;
 import com.microbank.banking_service.enums.TransactionType;
+import com.microbank.banking_service.exception.BlacklistedClientException;
 import com.microbank.banking_service.model.Account;
 import com.microbank.banking_service.model.Transaction;
 import com.microbank.banking_service.repository.AccountRepository;
@@ -77,7 +78,9 @@ public class AccountServiceTest {
     void testBlacklistedClientThrowsException() {
         String email = "evil@hacker.com";
 
-        UserDto user = new UserDto(3L,"evil@gmail.com", "evil", true);
+        // User is not blacklisted via DTO anymore — just basic info
+        UserDto user = new UserDto(3L, "evil@gmail.com", "evil", false);
+
         Account account = new Account();
         account.setId(3L);
         account.setClientId(3L);
@@ -86,10 +89,12 @@ public class AccountServiceTest {
         when(userClient.getUserByEmail(email)).thenReturn(user);
         when(accountRepo.findByClientId(user.getId())).thenReturn(Optional.of(account));
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () ->
+        accountService.blacklistClient(user.getId());
+
+        BlacklistedClientException exception = assertThrows(BlacklistedClientException.class, () ->
                 accountService.performTransaction(email, 50.0, TransactionType.DEPOSIT)
         );
 
-        assertEquals("Blacklisted client", exception.getMessage());
+        assertEquals("Transaction blocked: you are blacklisted.", exception.getMessage());
     }
 }

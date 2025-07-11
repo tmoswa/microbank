@@ -10,8 +10,10 @@ function DashboardPage() {
     const [blacklisted, setBlacklisted] = useState(false);
     const navigate = useNavigate();
 
-    const stored = localStorage.getItem('token');
-    const token = stored ? JSON.parse(stored).token : null;
+
+    const token = localStorage.getItem('token');
+    console.log(token);
+    //const token = stored ? JSON.parse(stored).token : null;
 
     useEffect(() => {
         fetchProfile();
