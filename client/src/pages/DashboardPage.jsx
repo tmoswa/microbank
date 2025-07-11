@@ -12,7 +12,6 @@ function DashboardPage() {
 
 
     const token = localStorage.getItem('token');
-    console.log(token);
     //const token = stored ? JSON.parse(stored).token : null;
 
     useEffect(() => {
