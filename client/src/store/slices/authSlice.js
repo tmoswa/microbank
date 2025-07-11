@@ -6,7 +6,7 @@ const decodeToken = (token) => {
         const decoded = jwtDecode(token);
         const { sub: user, role = 'client', exp } = decoded;
 
-        // Check expiration
+        // Checking expiration
         const now = Date.now() / 1000;
         if (exp && now > exp) {
             console.warn('Token expired');

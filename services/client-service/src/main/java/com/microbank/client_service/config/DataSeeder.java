@@ -1,5 +1,3 @@
-// com.microbank.client_service.config.DataSeeder.java
-
 package com.microbank.client_service.config;
 
 import com.microbank.client_service.model.User;
@@ -19,7 +17,7 @@ public class DataSeeder {
                 User admin = new User();
                 admin.setEmail("admin@microbank.com");
                 admin.setFullname("Dr Administrator");
-                admin.setUsername("admin");
+                admin.setUsername("admin@microbank.com");
                 admin.setPassword(passwordEncoder.encode("admin123"));
                 admin.setRole("admin");
                 userRepository.save(admin);

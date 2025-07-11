@@ -7,11 +7,18 @@ function DepositWithdrawal() {
     const [message, setMessage] = useState('');
     const [isError, setIsError] = useState(false);  // track error state
     const navigate = useNavigate();
+    const [isDisabled, setIsDisabled] = useState(false);
+
 
     const token = localStorage.getItem('token');
     //const token = stored ? JSON.parse(stored).token : null;
 
     const handleTransaction = async (type) => {
+        if (isDisabled) return;
+
+        setIsDisabled(true);
+        setTimeout(() => setIsDisabled(false), 5000);
+
         try {
             const res = await fetch(`${import.meta.env.VITE_BANKING_API}/api/accounts/${type}`, {
                 method: 'POST',
@@ -61,13 +68,15 @@ function DepositWithdrawal() {
                     <div className="flex space-x-4">
                         <button
                             onClick={() => handleTransaction('deposit')}
-                            className="bg-green-500 text-white px-4 py-2 rounded"
+                            disabled={isDisabled}
+                            className={`px-4 py-2 rounded text-white ${isDisabled ? 'bg-green-300 cursor-not-allowed' : 'bg-green-500'}`}
                         >
                             Deposit
                         </button>
                         <button
                             onClick={() => handleTransaction('withdraw')}
-                            className="bg-yellow-500 text-white px-4 py-2 rounded"
+                            disabled={isDisabled}
+                            className={`px-4 py-2 rounded text-white ${isDisabled ? 'bg-yellow-300 cursor-not-allowed' : 'bg-yellow-500'}`}
                         >
                             Withdraw
                         </button>

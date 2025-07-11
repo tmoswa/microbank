@@ -1,5 +1,3 @@
-// com.microbank.client_service.repository.UserRepository.java
-
 package com.microbank.client_service.repository;
 
 import com.microbank.client_service.model.User;
