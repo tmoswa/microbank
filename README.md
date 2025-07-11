@@ -123,19 +123,19 @@ Once all containers are running, access the platform via:
 ## *Deployed Application links (AWS)*
 
 - **Frontend (React UI)**:  
-  [http://13.60.68.0:5173](http://13.60.68.0:5173)
+  [http://13.60.68.0:5173](http://ec2-16-170-159-120.eu-north-1.compute.amazonaws.com:5173)
 
 - **API Gateway (Nginx)** (optional if enabled):  
-  [http://13.60.68.0:8090](http://13.60.68.0:8090)
+  [http://ec2-16-170-159-120.eu-north-1.compute.amazonaws.com:8090](http://ec2-16-170-159-120.eu-north-1.compute.amazonaws.com:8090)
 
 - **Client Service Swagger Docs**:  
-  [http://13.60.68.0:8088/swagger-ui.html](http://13.60.68.0:8088/swagger-ui.html)
+  [http://ec2-16-170-159-120.eu-north-1.compute.amazonaws.com:8088/swagger-ui.html](http://ec2-16-170-159-120.eu-north-1.compute.amazonaws.com:8088/swagger-ui.html)
 
 - **Banking Service Swagger Docs**:  
-  [http://13.60.68.0:8089/swagger-ui.html](http://13.60.68.0:8089/swagger-ui.html)
+  [http://ec2-16-170-159-120.eu-north-1.compute.amazonaws.com:8089/swagger-ui.html](http://ec2-16-170-159-120.eu-north-1.compute.amazonaws.com:8089/swagger-ui.html)
 
 - **RabbitMQ Management (guest/guest)**:  
-  [http://13.60.68.0:15672](http://13.60.68.0:15672)
+  [http://ec2-16-170-159-120.eu-north-1.compute.amazonaws.com:15672](http://ec2-16-170-159-120.eu-north-1.compute.amazonaws.com:15672)
 
 
 ###  Admin Login Credentials
