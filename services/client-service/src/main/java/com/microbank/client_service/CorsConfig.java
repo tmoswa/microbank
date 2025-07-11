@@ -17,8 +17,8 @@ public class CorsConfig {
 
         config.setAllowedOrigins(Arrays.asList(
                 "http://localhost:5173",
-                "http://ec2-16-170-159-120.eu-north-1.compute.amazonaws.com:5173",
-                "http://16.170.159.120:5173"
+                "http://ec2-13-61-146-139.eu-north-1.compute.amazonaws.com:5173",
+                "http://13.61.146.139:5173"
         ));
 
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
