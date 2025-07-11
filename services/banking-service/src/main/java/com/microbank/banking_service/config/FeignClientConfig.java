@@ -1,5 +1,3 @@
-// com.microbank.banking_service.config.FeignClientConfig.java
-
 package com.microbank.banking_service.config;
 
 import feign.RequestInterceptor;

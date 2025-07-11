@@ -1,5 +1,3 @@
-// com.microbank.client_service.controller.AuthController.java
-
 package com.microbank.client_service.controller;
 
 import com.microbank.client_service.JwtService;

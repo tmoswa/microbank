@@ -1,5 +1,3 @@
-// com.microbank.client_service.model.User.java
-
 package com.microbank.client_service.model;
 
 import jakarta.persistence.*;

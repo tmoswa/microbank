@@ -1,12 +1,138 @@
-# React + Vite
+Microbank: A Full-Stack Microservice Banking Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Microbank is a simplified banking system built using a microservices architecture. It features two core backend services and a modern web-based frontend for both clients and administrators.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Overview
 
-## Expanding the ESLint configuration
+The system is divided into:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- **Client Service**: Handles registration, authentication, user profile management, and blacklisting.
+- **Banking Service**: Manages bank accounts, deposits, withdrawals, and transaction history.
+
+The platform includes:
+
+- A **Client Dashboard** for performing banking actions.
+- An **Admin Panel** for managing users and controlling blacklist access.
+
+---
+
+## Features
+
+### Client Service
+- Register with email, name, and password
+- JWT-based login and authentication
+- Fetch current profile details
+- Admins can toggle a client's blacklist status
+- Automatically prevent blacklisted clients from accessing banking features
+
+### Banking Service
+- Secure deposit and withdrawal endpoints
+- Prevent overdrafts
+- Record every transaction
+- Reject all actions from blacklisted clients
+
+---
+
+## Frontend
+
+Built using **React + Tailwind CSS**.
+
+- **Register/Login** pages with validations
+- **Dashboard** to view balance and transactions
+- **Deposit/Withdraw** interface
+- Admin-only **Client Management** page to toggle blacklist status
+- Inline error feedback for blacklisted or unauthorized actions
+
+---
+
+## Docker & DevOps
+
+- Dockerized both services and the frontend
+- Docker Compose to orchestrate services, database (PostgreSQL), RabbitMQ, and Nginx
+- Uses RabbitMQ to sync blacklist status asynchronously
+- Configured Nginx as an API gateway with optional rate limiting (currently disabled)
+- GitHub Actions pipeline to deploy to AWS EC2
+
+---
+
+## Deployment
+
+The project is deployable to AWS Free Tier using:
+
+- Ubuntu 22 EC2 instance
+- Docker & Docker Compose
+- Nginx reverse proxy (port 8090)
+- PostgreSQL and RabbitMQ containers managed via Docker Compose
+
+---
+
+## Security
+
+- Only authenticated users can access protected resources
+- JWT tokens validated across services
+- Admin-only access to blacklist clients
+- Service-to-service communication avoids Feign and uses RabbitMQ for async updates
+- Sensitive endpoints (i.e. transactions) are rate-limit ready
+
+
+---
+
+## API Documentation
+
+Swagger UI is available for both services:
+
+- **Client Service**: `/swagger-ui.html` at port `8088`
+- **Banking Service**: `/swagger-ui.html` at port `8089`
+
+---
+
+## Setup Instructions
+
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/tmoswa/microbank.git
+   cd microbank
+
+2. **Build and Run with Docker Compose**
+   ```bash
+   docker-compose up --build
+
+3. **Access the App**
+
+Once all containers are running, access the platform via:
+
+- **Frontend (React UI)**:  
+  [http://localhost](http://localhost:5173)
+
+- **API Gateway (Nginx)** :  
+  [http://localhost:8090](http://localhost:8090)
+
+- **Client Service Swagger Docs**:  
+  [http://localhost:8088/swagger-ui.html](http://localhost:8088/swagger-ui.html)
+
+- **Banking Service Swagger Docs**:  
+  [http://localhost:8089/swagger-ui.html](http://localhost:8089/swagger-ui.html)
+
+- **RabbitMQ Management (guest/guest)**:  
+  [http://localhost:15672](http://localhost:15672)
+
+
+
+## *Deployed Application links (AWS)*
+
+- **Frontend (React UI)**:  
+  [http://13.60.68.0:5173](http://13.60.68.0:5173)
+
+- **API Gateway (Nginx)** (optional if enabled):  
+  [http://13.60.68.0:8090](http://13.60.68.0:8090)
+
+- **Client Service Swagger Docs**:  
+  [http://13.60.68.0:8088/swagger-ui.html](http://13.60.68.0:8088/swagger-ui.html)
+
+- **Banking Service Swagger Docs**:  
+  [http://13.60.68.0:8089/swagger-ui.html](http://13.60.68.0:8089/swagger-ui.html)
+
+- **RabbitMQ Management (guest/guest)**:  
+  [http://13.60.68.0:15672](http://13.60.68.0:15672)
