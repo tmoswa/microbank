@@ -1,6 +1,8 @@
 services:
   client-service:
-    build: ./services/client-service
+    build:
+        context: ./services/client-service
+        dockerfile: Dockerfile
     ports:
       - "8088:8080"
     depends_on:
@@ -16,7 +18,9 @@ services:
       - SPRING_RABBITMQ_HOST=rabbitmq
 
   banking-service:
-    build: ./services/banking-service
+    build:
+        context: ./services/banking-service
+        dockerfile: Dockerfile
     ports:
       - "8089:8080"
     depends_on:
@@ -38,11 +42,14 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
     healthcheck:
       test: [ "CMD", "rabbitmqctl", "status" ]
       interval: 10s
       timeout: 10s
       retries: 5
+
 
   db:
     image: postgres:16
@@ -63,3 +70,11 @@ services:
     depends_on:
       - client-service
       - banking-service
+
+  client-ui:
+    build: ./client
+    ports:
+      - "5173:80"
+
+volumes:
+  rabbitmq_data:
