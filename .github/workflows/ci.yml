@@ -1,0 +1,17 @@
+name: CI
+on:
+  push:
+    branches: [ develop, main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+      - name: Build with Maven
+        run: mvn -B package --file services/client-service/pom.xml
+      - name: Run SonarQube
+        run: mvn sonar:sonar -Dsonar.host.url=http://<sonarqube-url>
