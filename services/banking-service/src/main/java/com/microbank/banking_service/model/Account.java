@@ -1,12 +1,24 @@
-package com.microbank.bankingservice.model;
-import lombok.Data;
+package com.microbank.banking_service.model;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-@Data
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import lombok.Getter;
+import jakarta.persistence.Column;
+import lombok.Setter;
+
+@Setter
+@Getter
 @Entity
 public class Account {
+    // Getters and setters
     @Id
-    private String id; // UUID
-    private String clientId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "client_id", unique = true, nullable = false)
+    private Long clientId;
     private double balance;
+
 }

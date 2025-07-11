@@ -1,21 +1,60 @@
 server:
   port: 8088
+
 spring:
+  config:
+    activate:
+      on-profile: dev
+
   datasource:
     url: jdbc:h2:mem:clientdb
     driver-class-name: org.h2.Driver
     username: sa
     password:
+
   jpa:
     hibernate:
       ddl-auto: update
+    database-platform: org.hibernate.dialect.H2Dialect
+
   rabbitmq:
     host: localhost
     port: 5672
     username: guest
     password: guest
+
 springdoc:
   api-docs:
     path: /api-docs
   swagger-ui:
     path: /swagger-ui.html
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  web:
+    cors:
+      allowed-origins: "http://localhost:5173"
+      allowed-methods: "*"
+      allowed-headers: "*"
+
+  datasource:
+    url: jdbc:postgresql://db:5432/microbank
+    driver-class-name: org.postgresql.Driver
+    username: user
+    password: password
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: guest
+    password: guest
