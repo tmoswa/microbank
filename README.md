@@ -8,8 +8,8 @@ Microbank is a simplified banking system built using a microservices architectur
 
 The system is divided into:
 
-- **Client Service**: Handles registration, authentication, user profile management, and blacklisting.
-- **Banking Service**: Manages bank accounts, deposits, withdrawals, and transaction history.
+- **Client Service(Spring Boot 3.5.3)**: Handles registration, authentication, user profile management, and blacklisting.
+- **Banking Service(Spring Boot 3.5.3)**: Manages bank accounts, deposits, withdrawals, and transaction history.
 
 The platform includes:
 
@@ -52,14 +52,14 @@ Built using **React + Tailwind CSS**.
 - Dockerized both services and the frontend
 - Docker Compose to orchestrate services, database (PostgreSQL), RabbitMQ, and Nginx
 - Uses RabbitMQ to sync blacklist status asynchronously
-- Configured Nginx as an API gateway with optional rate limiting (currently disabled)
+- Configured Nginx as an API gateway with optional rate limiting
 - GitHub Actions pipeline to deploy to AWS EC2
 
 ---
 
 ## Deployment
 
-The project is deployable to AWS Free Tier using:
+The project is deployable to AWS/Azure using:
 
 - Ubuntu 22 EC2 instance
 - Docker & Docker Compose
@@ -73,7 +73,7 @@ The project is deployable to AWS Free Tier using:
 - Only authenticated users can access protected resources
 - JWT tokens validated across services
 - Admin-only access to blacklist clients
-- Service-to-service communication avoids Feign and uses RabbitMQ for async updates
+- Service-to-service communication uses Feign and RabbitMQ for async updates
 - Sensitive endpoints (i.e. transactions) are rate-limit ready
 
 
@@ -95,7 +95,7 @@ Swagger UI is available for both services:
    git clone https://github.com/tmoswa/microbank.git
    cd microbank
 
-2. **Build and Run with Docker Compose**
+2. **Ensure you have Docker & Docker Compose are installed on your platform then Build and Run with Docker Compose**
    ```bash
    docker-compose up --build
 
@@ -104,10 +104,7 @@ Swagger UI is available for both services:
 Once all containers are running, access the platform via:
 
 - **Frontend (React UI)**:  
-  [http://localhost](http://localhost:5173)
-
-- **API Gateway (Nginx)** :  
-  [http://localhost:8090](http://localhost:8090)
+  [http://localhost:5173](http://localhost:5173)
 
 - **Client Service Swagger Docs**:  
   [http://localhost:8088/swagger-ui.html](http://localhost:8088/swagger-ui.html)
@@ -118,25 +115,7 @@ Once all containers are running, access the platform via:
 - **RabbitMQ Management (guest/guest)**:  
   [http://localhost:15672](http://localhost:15672)
 
-
-
-## *Deployed Application links (AWS)*
-
-- **Frontend (React UI)**:  
-  [http://13.60.68.0:5173](http://ec2-13-61-146-139.eu-north-1.compute.amazonaws.com:5173)
-
-- **API Gateway (Nginx)** (optional if enabled):  
-  [http://ec2-13-61-146-139.eu-north-1.compute.amazonaws.com:8090](http://ec2-13-61-146-139.eu-north-1.compute.amazonaws.com:8090)
-
-- **Client Service Swagger Docs**:  
-  [http://ec2-13-61-146-139.eu-north-1.compute.amazonaws.com:8088/swagger-ui.html](http://ec2-13-61-146-139.eu-north-1.compute.amazonaws.com:8088/swagger-ui.html)
-
-- **Banking Service Swagger Docs**:  
-  [http://ec2-13-61-146-139.eu-north-1.compute.amazonaws.com:8089/swagger-ui.html](http://ec2-13-61-146-139.eu-north-1.compute.amazonaws.com:8089/swagger-ui.html)
-
-- **RabbitMQ Management (guest/guest)**:  
-  [http://ec2-13-61-146-139.eu-north-1.compute.amazonaws.com:15672](http://ec2-13-61-146-139.eu-north-1.compute.amazonaws.com:15672)
-
+  
 
 ###  Admin Login Credentials
 
