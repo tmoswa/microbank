@@ -1,61 +1,30 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+import { useBanking } from '../hooks/useBanking';
 import Navbar from '../components/Navbar';
 
 function DepositWithdrawal() {
     const [amount, setAmount] = useState('');
-    const [message, setMessage] = useState('');
-    const [isError, setIsError] = useState(false);  // track error state
-    const navigate = useNavigate();
     const [isDisabled, setIsDisabled] = useState(false);
-
-
-    const token = localStorage.getItem('token');
-    //const token = stored ? JSON.parse(stored).token : null;
+    const { token } = useAuth();
+    const { message, performTransaction } = useBanking(token);
+    const navigate = useNavigate();
 
     const handleTransaction = async (type) => {
         if (isDisabled) return;
-
         setIsDisabled(true);
         setTimeout(() => setIsDisabled(false), 5000);
 
-        try {
-            const res = await fetch(`${import.meta.env.VITE_BANKING_API}/api/accounts/${type}`, {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ amount: parseFloat(amount) }),
-            });
-
-            const data = await res.json();
-
-            if (!data.success) {
-                setMessage(data.message || 'Transaction failed');
-                setIsError(true);
-            } else {
-                setMessage(`${type.charAt(0).toUpperCase() + type.slice(1)} successful: $${amount}`);
-                setIsError(false);
-                setAmount('');
-            }
-        } catch (err) {
-            setMessage(err.message);
-            setIsError(true);
-        }
-    };
-
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        navigate('/');
+        const success = await performTransaction(type, amount);
+        if (success) setAmount('');
     };
 
     return (
         <div className="min-h-screen bg-gray-50 p-6">
-            <Navbar role="client" />
+            <Navbar />
             <div className="bg-white p-6 rounded shadow max-w-md mx-auto">
                 <h2 className="text-xl font-semibold mb-4">Deposit / Withdraw</h2>
-
                 <input
                     type="number"
                     value={amount}
@@ -63,7 +32,6 @@ function DepositWithdrawal() {
                     placeholder="Enter amount"
                     className="border p-2 rounded w-full mb-4"
                 />
-
                 <div className="flex justify-between items-center flex-wrap gap-4">
                     <div className="flex space-x-4">
                         <button
@@ -88,9 +56,8 @@ function DepositWithdrawal() {
                         Back to Dashboard
                     </button>
                 </div>
-
                 {message && (
-                    <div className={`mt-4 text-center text-sm font-semibold ${isError ? 'text-green-600' : 'text-red-600'}`}>
+                    <div className={`mt-4 text-center text-sm font-semibold ${message.includes('successful') ? 'text-green-600' : 'text-red-600'}`}>
                         {message}
                     </div>
                 )}

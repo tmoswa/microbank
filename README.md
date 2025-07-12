@@ -142,3 +142,9 @@ Once all containers are running, access the platform via:
 
 - **Email**: `admin@microbank.com`
 - **Password**: `admin123`
+
+
+###  Note: Ports conflict and URL configuration
+
+- **Ports are defined in docker-compose and services application.yml, if you need to update any ports look in these 3 files**
+- **Client side(React), ports and url are defined in .env, for local use localhost unless changed in the above files then for deployment use necessary URLa**

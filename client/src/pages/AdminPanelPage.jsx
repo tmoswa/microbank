@@ -1,54 +1,21 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+import { useClient } from '../hooks/useClient';
 import Navbar from '../components/Navbar';
 
-
 function AdminPanelPage() {
-    const [clients, setClients] = useState([]);
-    const [message, setMessage] = useState('');
+    const { token, handleLogout } = useAuth();
+    const { clients, message, fetchClients, toggleBlacklist } = useClient(token);
     const navigate = useNavigate();
-
-    const token = localStorage.getItem('token');
-    //const token = stored ? JSON.parse(stored).token : null;
-
 
     useEffect(() => {
         fetchClients();
-    }, []);
-
-    const fetchClients = async () => {
-        const res = await fetch(`${import.meta.env.VITE_CLIENT_API}/api/clients`, {
-            headers: { Authorization: `Bearer ${token}` },
-        });
-
-        const data = await res.json();
-
-        setClients(data);
-    };
-
-    const toggleBlacklist = async (clientId, currentStatus) => {
-        const res = await fetch(`${import.meta.env.VITE_CLIENT_API}/api/clients/${clientId}/blacklist`, {
-            method: 'PUT',
-            headers: { Authorization: `Bearer ${token}` },
-        });
-        if (res.ok) {
-            setMessage(`Action Successful`);
-            fetchClients();
-        } else {
-            setMessage('Error updating blacklist status');
-        }
-    };
-
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        navigate('/');
-    };
+    }, [fetchClients]);
 
     return (
         <div className="min-h-screen bg-gray-50 p-6">
-            <Navbar role="admin" />
-
-
+            <Navbar />
             <div className="bg-white p-6 rounded shadow">
                 <h2 className="text-xl font-semibold mb-4">Clients List</h2>
                 <table className="w-full border">
@@ -71,9 +38,7 @@ function AdminPanelPage() {
                             <td className="p-2">
                                 <button
                                     onClick={() => toggleBlacklist(client.id, client.blacklisted)}
-                                    className={`px-3 py-1 rounded text-white ${
-                                        client.blacklisted ? 'bg-green-500' : 'bg-red-500'
-                                    }`}
+                                    className={`px-3 py-1 rounded text-white ${client.blacklisted ? 'bg-green-500' : 'bg-red-500'}`}
                                 >
                                     {client.blacklisted ? 'Activate' : 'Blacklist'}
                                 </button>
@@ -83,10 +48,7 @@ function AdminPanelPage() {
                     </tbody>
                 </table>
             </div>
-
-            {message && (
-                <div className="mt-4 text-center text-sm text-gray-700">{message}</div>
-            )}
+            {message && <div className="mt-4 text-center text-sm text-gray-700">{message}</div>}
         </div>
     );
 }
