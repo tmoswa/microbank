@@ -15,7 +15,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
-    private final CorsConfigurationSource corsConfigurationSource; // <-- inject Cors bean
+    private final CorsConfigurationSource corsConfigurationSource;
 
     public SecurityConfig(JwtFilter jwtFilter, CorsConfigurationSource corsConfigurationSource) {
         this.jwtFilter = jwtFilter;

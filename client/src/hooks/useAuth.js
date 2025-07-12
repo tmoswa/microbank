@@ -32,20 +32,20 @@ export const useAuth = () => {
         try {
             const data = await authService.login(username, password);
             // Persistent debug logs
-            localStorage.setItem('debug:loginResponse', JSON.stringify(data));
-            console.log('Login API response:', data);
+            //localStorage.setItem('debug:loginResponse', JSON.stringify(data));
+            //console.log('Login API response:', data);
             const token = data.token;
             const decoded = jwtDecode(token);
-            localStorage.setItem('debug:decodedJWT', JSON.stringify(decoded));
-            console.log('Decoded JWT:', decoded);
+            //localStorage.setItem('debug:decodedJWT', JSON.stringify(decoded));
+            //console.log('Decoded JWT:', decoded);
             const userRole = data.role || decoded.role || 'client';
-            localStorage.setItem('debug:selectedRole', userRole);
-            console.log('Selected role for navigation:', userRole);
+            //localStorage.setItem('debug:selectedRole', userRole);
+            //console.log('Selected role for navigation:', userRole);
             dispatch(login({ token }));
             toast.success('Login successful!');
             setTimeout(() => {
                 navigate(userRole === 'admin' ? '/admin' : '/dashboard');
-            }, 1000); // 1-second delay
+            }, 1000); // 1 sec delay
         } catch (error) {
             localStorage.setItem('debug:loginError', JSON.stringify(error));
             console.error('Login error:', error);
