@@ -44,7 +44,6 @@ public class AuthController {
 
 }
 
-// Simple DTO for login response JSON
 class LoginResponse {
     private String token;
     private String role;

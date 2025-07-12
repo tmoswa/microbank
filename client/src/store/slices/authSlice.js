@@ -3,30 +3,23 @@ import { jwtDecode } from 'jwt-decode';
 
 const decodeToken = (token) => {
     try {
-        const decoded = jwtDecode(token);
-        const { sub: user, role = 'client', exp } = decoded;
-
-        // Checking expiration
+        const { sub: user, role = 'client', exp } = jwtDecode(token);
         const now = Date.now() / 1000;
         if (exp && now > exp) {
             console.warn('Token expired');
             return { user: null, role: null, expired: true };
         }
-
         return { user, role, expired: false };
-    } catch (e) {
+    } catch {
         console.warn('Invalid token');
         return { user: null, role: null, expired: true };
     }
 };
 
-const token = localStorage.getItem('token');
-const { user, role, expired } = token ? decodeToken(token) : { user: null, role: null, expired: true };
-
 const initialState = {
-    token: expired ? null : token,
-    user: expired ? null : user,
-    role: expired ? null : role,
+    token: null,
+    user: null,
+    role: null,
     loading: false,
 };
 
@@ -36,22 +29,18 @@ const authSlice = createSlice({
     reducers: {
         login(state, action) {
             const { token } = action.payload;
-            localStorage.setItem('token', token);
             const { user, role, expired } = decodeToken(token);
-
             if (expired) {
                 state.token = null;
                 state.user = null;
                 state.role = null;
                 return;
             }
-
             state.token = token;
             state.user = user;
             state.role = role;
         },
         logout(state) {
-            localStorage.removeItem('token');
             state.token = null;
             state.user = null;
             state.role = null;

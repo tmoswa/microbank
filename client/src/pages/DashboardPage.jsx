@@ -1,88 +1,34 @@
-// src/pages/DashboardPage.jsx
-import { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+import { useClient } from '../hooks/useClient';
+import { useBanking } from '../hooks/useBanking';
 import Navbar from '../components/Navbar';
 
 function DashboardPage() {
-    const [account, setAccount] = useState(null);
-    const [transactions, setTransactions] = useState([]);
-    const [message, setMessage] = useState('');
-    const [blacklisted, setBlacklisted] = useState(false);
+    const { token, handleLogout } = useAuth();
+    const { profile, message: clientMessage, blacklisted, fetchProfile } = useClient(token);
+    const { account, transactions, message: bankingMessage, fetchAccount, fetchTransactions } = useBanking(token);
     const navigate = useNavigate();
 
-
-    const token = localStorage.getItem('token');
-    //const token = stored ? JSON.parse(stored).token : null;
-
     useEffect(() => {
-        fetchProfile();
-    }, []);
-
-    const fetchProfile = async () => {
-        try {
-        const res = await fetch(`${import.meta.env.VITE_CLIENT_API}/api/clients/me`, {
-            headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
-
-        if (res.status === 403 || data.blacklisted) {
-            setBlacklisted(true);
-            setMessage('You are blacklisted and cannot transact.');
-            return;
-        }
-
-        if (!res.ok) {
-            setBlacklisted(true);
-            setMessage('An error has occurred, our Engineers are working flat out to resolve the issue.');
-            return;
-        }
-
-        setBlacklisted(false);
-        fetchAccount();
-        fetchTransactions();
-    } catch (err) {
-        setBlacklisted(true);
-        setMessage('Failed to fetch profile. Please try again later.');
-    }
-};
-
-
-const fetchAccount = async () => {
-        try {
-            const res = await fetch(`${import.meta.env.VITE_BANKING_API}/api/accounts/me`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            const data = await res.json();
-            setAccount(data);
-        } catch (err) {
-            setMessage('Failed to fetch account.');
-        }
-    };
-
-    const fetchTransactions = async () => {
-        try {
-            const res = await fetch(`${import.meta.env.VITE_BANKING_API}/api/accounts/me/transactions`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            const data = await res.json();
-            setTransactions(data);
-        } catch (err) {
-            setMessage('Failed to fetch transactions.');
-        }
-    };
-
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        navigate('/');
-    };
+        const loadData = async () => {
+            const isNotBlacklisted = await fetchProfile();
+            if (isNotBlacklisted) {
+                fetchAccount();
+                fetchTransactions();
+            }
+        };
+        loadData();
+    }, [fetchProfile, fetchAccount, fetchTransactions]);
 
     return (
         <div className="min-h-screen bg-gray-50 p-6">
-            <Navbar role="client" />
+            <Navbar />
             <div className="bg-white p-6 rounded shadow mb-6">
                 <h2 className="text-xl font-semibold mb-2">Account Info</h2>
                 {blacklisted ? (
-                    <div className="text-red-600 font-semibold">{message}</div>
+                    <div className="text-red-600 font-semibold">{clientMessage}</div>
                 ) : account ? (
                     <>
                         <p><strong>Balance:</strong> ${account.balance}</p>
@@ -102,7 +48,8 @@ const fetchAccount = async () => {
                         <ul className="space-y-2">
                             {transactions.map((tx) => (
                                 <li key={tx.id} className="border-b py-2">
-                                    <span className="font-semibold">{tx.type.toUpperCase()}</span>: ${tx.amount} on {new Date(tx.timestamp).toLocaleString()}
+                                    <span className="font-semibold">{tx.type.toUpperCase()}</span>: ${tx.amount} on{' '}
+                                    {new Date(tx.timestamp).toLocaleString()}
                                 </li>
                             ))}
                         </ul>
@@ -112,7 +59,9 @@ const fetchAccount = async () => {
                 </div>
             )}
 
-            {message && <div className="mt-4 text-center text-sm text-gray-700">{message}</div>}
+            {(clientMessage || bankingMessage) && (
+                <div className="mt-4 text-center text-sm text-gray-700">{clientMessage || bankingMessage}</div>
+            )}
         </div>
     );
 }

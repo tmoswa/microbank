@@ -5,6 +5,7 @@ import com.microbank.banking_service.model.Transaction;
 import com.microbank.banking_service.service.AccountService;
 import com.microbank.banking_service.enums.TransactionType;
 import com.microbank.banking_service.dto.TransactionRequest;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.userdetails.User;
@@ -29,6 +30,7 @@ public class AccountController {
         this.accountService = accountService;
     }
 
+    @Operation(summary = "Get the authenticated user's bank account details")
     @GetMapping("/me")
     public Account getMyAccount(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
@@ -36,6 +38,7 @@ public class AccountController {
         return accountService.getClientAccount(email);
     }
 
+    @Operation(summary = "Get transaction history for the authenticated user")
     @GetMapping("/me/transactions")
     public List<Transaction> getMyTransactions(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
@@ -43,6 +46,7 @@ public class AccountController {
         return accountService.getTransactionHistory(email);
     }
 
+    @Operation(summary = "Perform a deposit for the authenticated user")
     @PostMapping("/deposit")
     public Map<String, String> deposit(Authentication authentication, @RequestBody TransactionRequest request) {
         User user = (User) authentication.getPrincipal();
@@ -51,6 +55,7 @@ public class AccountController {
         return Map.of("message", "Deposit successful");
     }
 
+    @Operation(summary = "Perform a withdrawal for the authenticated user")
     @PostMapping("/withdraw")
     public Map<String, String> withdraw(Authentication authentication, @RequestBody TransactionRequest request) {
         User user = (User) authentication.getPrincipal();
