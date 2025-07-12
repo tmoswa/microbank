@@ -95,7 +95,7 @@ Swagger UI is available for both services:
    git clone https://github.com/tmoswa/microbank.git
    cd microbank
 
-2. **Build and Run with Docker Compose**
+2. **Ensure you have Docker & Docker Compose are installed on your platform then Build and Run with Docker Compose**
    ```bash
    docker-compose up --build
 
