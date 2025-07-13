@@ -1,10 +1,15 @@
 package com.microbank.client_service.dto;
 
 
-import java.io.Serializable;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 
+import java.io.Serializable;
+
+@Setter
+@Getter
 public class BlacklistStatusMessage implements Serializable {
     private Long clientId;
     private boolean blacklisted;
@@ -16,19 +21,4 @@ public class BlacklistStatusMessage implements Serializable {
         this.blacklisted = blacklisted;
     }
 
-    public Long getClientId() {
-        return clientId;
-    }
-
-    public boolean isBlacklisted() {
-        return blacklisted;
-    }
-
-    public void setClientId(Long clientId) {
-        this.clientId = clientId;
-    }
-
-    public void setBlacklisted(boolean blacklisted) {
-        this.blacklisted = blacklisted;
-    }
 }

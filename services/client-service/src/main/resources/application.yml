@@ -2,6 +2,8 @@ server:
   port: 8088
 
 spring:
+  application:
+    name: client-service
   config:
     activate:
       on-profile: dev
@@ -32,6 +34,8 @@ springdoc:
 ---
 
 spring:
+  application:
+    name: client-service
   config:
     activate:
       on-profile: prod
@@ -59,6 +63,10 @@ spring:
     username: guest
     password: guest
 
+server:
+  port: 8080
+  address: 0.0.0.0
+
 logging:
   level:
     org.springframework.web: DEBUG
@@ -67,3 +75,14 @@ logging:
     org.hibernate.SQL: DEBUG
     org.hibernate.orm.jdbc.bind: TRACE
     org.springframework.amqp: DEBUG
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka
+  instance:
+    prefer-ip-address: true
+    hostname: client-service
+    instance-id: ${spring.application.name}:${server.port}
+

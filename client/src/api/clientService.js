@@ -2,7 +2,7 @@ const API_URL = import.meta.env.VITE_CLIENT_API;
 
 export const clientService = {
     fetchClients: async (token) => {
-        const response = await fetch(`${API_URL}/api/clients`, {
+        const response = await fetch(`${API_URL}/clients`, {
             headers: { Authorization: `Bearer ${token}` },
         });
         if (!response.ok) throw new Error('Failed to fetch clients');
@@ -10,7 +10,7 @@ export const clientService = {
     },
 
     fetchProfile: async (token) => {
-        const response = await fetch(`${API_URL}/api/clients/me`, {
+        const response = await fetch(`${API_URL}/clients/me`, {
             headers: { Authorization: `Bearer ${token}` },
         });
         if (!response.ok) {
@@ -21,7 +21,7 @@ export const clientService = {
     },
 
     toggleBlacklist: async (token, clientId, currentStatus) => {
-        const response = await fetch(`${API_URL}/api/clients/${clientId}/blacklist`, {
+        const response = await fetch(`${API_URL}/clients/${clientId}/blacklist`, {
             method: 'PUT',
             headers: { Authorization: `Bearer ${token}` },
         });

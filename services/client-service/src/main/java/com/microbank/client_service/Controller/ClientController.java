@@ -14,9 +14,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 import java.util.Map;
@@ -51,9 +49,7 @@ public class ClientController {
         client.setBlacklisted(!client.isBlacklisted());
         Client updated = clientRepository.save(client);
 
-        // Always send blacklist update event
         BlacklistStatusMessage message = new BlacklistStatusMessage(updated.getId(), updated.isBlacklisted());
-
         rabbitTemplate.convertAndSend(
                 RabbitMQConfig.BLACKLIST_EXCHANGE,
                 RabbitMQConfig.BLACKLIST_ROUTING_KEY,
@@ -63,11 +59,9 @@ public class ClientController {
         return ResponseEntity.ok(Map.of("blacklisted", updated.isBlacklisted()));
     }
 
-
-    @Operation(summary = "Register a new client with email, fullname, username, and password")
+    @Operation(summary = "Register a new client with email, fullname, and password")
     @PostMapping("/register")
     public ResponseEntity<?> registerClient(@Valid @RequestBody RegistrationRequest request) {
-
         if (userRepository.existsByEmail(request.getEmail())) {
             return ResponseEntity.badRequest().body(Map.of("errors", Map.of("email", "Email is already taken.")));
         }
@@ -88,36 +82,35 @@ public class ClientController {
         return ResponseEntity.ok(Map.of("message", "Registration successful, you can login to transact!"));
     }
 
-
-    @Operation(summary = "Get client details by email address (username)")
+    @Operation(summary = "Get client details by email address")
     @GetMapping("/by-email")
     public ResponseEntity<UserDto> getClientByEmail(@RequestParam String email) {
-        User user = userRepository.findByUsername(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        Client client = clientRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Client not found"));
-
-        UserDto dto = new UserDto(user.getId(),user.getEmail(), user.getUsername(), client.isBlacklisted());
-        return ResponseEntity.ok(dto);
+        return ResponseEntity.ok(getUserDtoByUsername(email));
     }
 
     @Operation(summary = "Get currently authenticated client details")
     @GetMapping("/me")
     public ResponseEntity<UserDto> getCurrentClient(Authentication authentication) {
         String username = authentication.getName();
+        return ResponseEntity.ok(getUserDtoByUsername(username));
+    }
 
+    @Operation(summary = "Get all blacklisted clients")
+    @GetMapping("/blacklisted-ids")
+    public List<Long> getBlacklistedClientIds() {
+        return clientRepository.findAll().stream()
+                .filter(Client::isBlacklisted)
+                .map(Client::getId)
+                .toList();
+    }
+
+    private UserDto getUserDtoByUsername(String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found "+ username));
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
 
         Client client = clientRepository.findByUser(user)
                 .orElseThrow(() -> new RuntimeException("Client not found"));
 
-        UserDto dto = new UserDto(user.getId(),user.getEmail(), user.getUsername(), client.isBlacklisted());
-        return ResponseEntity.ok(dto);
+        return new UserDto(user.getId(), user.getEmail(), user.getUsername(), client.isBlacklisted(), client.getId());
     }
-
-
-
-
 }
