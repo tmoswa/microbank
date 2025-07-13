@@ -2,7 +2,7 @@ const API_URL = import.meta.env.VITE_BANKING_API;
 
 export const bankingService = {
     fetchAccount: async (token) => {
-        const response = await fetch(`${API_URL}/api/accounts/me`, {
+        const response = await fetch(`${API_URL}/accounts/me`, {
             headers: { Authorization: `Bearer ${token}` },
         });
         if (!response.ok) throw new Error('Failed to fetch account');
@@ -10,7 +10,7 @@ export const bankingService = {
     },
 
     fetchTransactions: async (token) => {
-        const response = await fetch(`${API_URL}/api/accounts/me/transactions`, {
+        const response = await fetch(`${API_URL}/accounts/me/transactions`, {
             headers: { Authorization: `Bearer ${token}` },
         });
         if (!response.ok) throw new Error('Failed to fetch transactions');
@@ -18,7 +18,7 @@ export const bankingService = {
     },
 
     performTransaction: async (token, type, amount) => {
-        const response = await fetch(`${API_URL}/api/accounts/${type}`, {
+        const response = await fetch(`${API_URL}/accounts/${type}`, {
             method: 'POST',
             headers: {
                 Authorization: `Bearer ${token}`,

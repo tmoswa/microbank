@@ -1,41 +1,56 @@
-Microbank: A Full-Stack Microservice Banking Platform
 
-Microbank is a simplified banking system built using a microservices architecture. It features two core backend services and a modern web-based frontend for both clients and administrators.
+# Microbank: Enterprise-Grade Microservice Banking Platform
+
+Microbank is a modular banking system designed using microservices, clean architecture, and Spring Cloud. It supports client onboarding, secure JWT-based authentication, transaction handling, and real-time blacklist enforcement with RabbitMQ and Eureka-based service discovery.
 
 ---
 
-## Overview
+## System Architecture
 
-The system is divided into:
+The platform is divided into the following services:
 
-- **Client Service(Spring Boot 3.5.3)**: Handles registration, authentication, user profile management, and blacklisting.
-- **Banking Service(Spring Boot 3.5.3)**: Manages bank accounts, deposits, withdrawals, and transaction history.
+- **Client Service** *(Spring Boot 3.5.3)*  
+  Handles registration, JWT authentication, user profile management, and client blacklisting.
 
-The platform includes:
+- **Banking Service** *(Spring Boot 3.5.3)*  
+  Manages bank accounts, deposits, withdrawals, transaction history, and blacklisted client handling.
 
-- A **Client Dashboard** for performing banking actions.
-- An **Admin Panel** for managing users and controlling blacklist access.
+- **Eureka Discovery Server** *(Spring Cloud 2025.0.0)*  
+  Enables dynamic service registration and lookup for Feign clients.
+
+- **Nginx API Gateway** *(Reverse Proxy)*  
+  Handles routing, load balancing, and rate-limiting for frontend and APIs.
+
+  - **Frontend** *(ReactJS + Tailwind CSS)*  
+    Handles the UI.
 
 ---
 
 ## Features
 
-### Client Service
-- Register with email, name, and password
-- JWT-based login and authentication
-- Fetch current profile details
-- Admins can toggle a client's blacklist status
-- Automatically prevent blacklisted clients from accessing banking features
+### Authentication & Authorization
+
+- JWT-based login
+- Stateless security with Spring Security
+- Role-based admin privileges
+- CORS configured for React Frontend
+- Secure endpoint-level access
 
 ### Banking Service
-- Secure deposit and withdrawal endpoints
-- Prevent overdrafts
-- Record every transaction
-- Reject all actions from blacklisted clients
 
----
+- Deposit & withdrawal APIs
+- Overdraft protection
+- Transaction recording with timestamps
+- Swagger-documented endpoints
 
-## Frontend
+### Client Service
+
+- User registration & login
+- Admin can blacklist clients
+- Real-time blacklist sync using RabbitMQ
+- BankingService rejects operations from blacklisted users
+
+## Frontend - UI
 
 Built using **React + Tailwind CSS**.
 
@@ -45,85 +60,112 @@ Built using **React + Tailwind CSS**.
 - Admin-only **Client Management** page to toggle blacklist status
 - Inline error feedback for blacklisted or unauthorized actions
 
----
+### Microservice Integration
 
-## Docker & DevOps
+- OpenFeign clients for service-to-service communication
+- Eureka Service Discovery
+- Spring Cloud LoadBalancer fallback support
+- Request propagation with Feign interceptors
 
-- Dockerized both services and the frontend
-- Docker Compose to orchestrate services, database (PostgreSQL), RabbitMQ, and Nginx
-- Uses RabbitMQ to sync blacklist status asynchronously
-- Configured Nginx as an API gateway with optional rate limiting
-- GitHub Actions pipeline to deploy to AWS EC2
+### Performance Enhancements
 
----
-
-## Deployment
-
-The project is deployable to AWS/Azure using:
-
-- Ubuntu 22 EC2 instance
-- Docker & Docker Compose
-- Nginx reverse proxy (port 8090)
-- PostgreSQL and RabbitMQ containers managed via Docker Compose
-
----
-
-## Security
-
-- Only authenticated users can access protected resources
-- JWT tokens validated across services
-- Admin-only access to blacklist clients
-- Service-to-service communication uses Feign and RabbitMQ for async updates
-- Sensitive endpoints (i.e. transactions) are rate-limit ready
-
+- In-memory caching (`@Cacheable`) on expensive Feign calls
+- Retry logic for Feign clients (`@EnableRetry`)
+- Graceful fallback when services are unavailable
+- Blacklist logic extracted into `BlacklistService`
 
 ---
 
 ## API Documentation
 
-Swagger UI is available for both services:
+Auto-generated using SpringDoc and Swagger UI:
 
-- **Client Service**: `/swagger-ui.html` at port `8088`
-- **Banking Service**: `/swagger-ui.html` at port `8089`
+| Service         | Port | Swagger URL                          |
+| Client Service  | 8088 | `http://localhost:8088/swagger-ui.html` |
+| Banking Service | 8089 | `http://localhost:8089/swagger-ui.html` |
+| Eureka Server   | 8761 | `http://localhost:8761`             |
 
 ---
 
-## Setup Instructions
+## Technologies
 
-1. **Clone the Repository**
-   ```bash
-   git clone https://github.com/tmoswa/microbank.git
-   cd microbank
+- Spring Boot 3.5.3
+- Spring Security, Spring Data JPA, Spring Cloud
+- RabbitMQ (message broker for async blacklist)
+- PostgreSQL & H2 for persistence
+- Eureka Server (for discovery)
+- OpenFeign (for inter-service REST)
+- Docker & Docker Compose
+- Nginx (for reverse proxy and rate-limiting)
+- React + Tailwind (frontend)
 
-2. **Ensure you have Docker & Docker Compose are installed on your platform then Build and Run with Docker Compose**
-   ```bash
-   docker-compose up --build
+---
 
-3. **Access the App**
+## Docker & DevOps
 
-Once all containers are running, access the platform via:
+> All services are containerized and managed via Docker Compose
 
-- **Frontend (React UI)**:  
-  [http://localhost:5173](http://localhost:5173)
+### Services
 
-- **Client Service Swagger Docs**:  
-  [http://localhost:8088/swagger-ui.html](http://localhost:8088/swagger-ui.html)
+| Container          | Description                       | Port |
+| `client-service`   | Handles users & blacklist         | 8088 |
+| `banking-service`  | Handles accounts & transactions   | 8089 |
+| `frontend`         | React client app                  | 5173 |
+| `postgres`         | PostgreSQL DB                     | 5432 |
+| `rabbitmq`         | Message broker                    | 5672 (AMQP), 15672 (Mgmt) |
+| `eureka-server`    | Service registry                  | 8761 |
+| `nginx`            | Reverse proxy                     | 8090 |
 
-- **Banking Service Swagger Docs**:  
-  [http://localhost:8089/swagger-ui.html](http://localhost:8089/swagger-ui.html)
+---
 
-- **RabbitMQ Management (guest/guest)**:  
-  [http://localhost:15672](http://localhost:15672)
+## Deployment
 
-  
+### Requirements
 
-###  Admin Login Credentials
+- Docker & Docker Compose
+- Ubuntu 22 or AWS EC2 t2.medium+
+- Nginx Reverse Proxy (configured with rate limiting)
 
-- **Email**: `admin@microbank.com`
-- **Password**: `admin123`
+### Run Locally
 
+```bash
+git clone https://github.com/tmoswa/microbank.git
+cd microbank
+docker-compose up --build
+```
 
-###  Note: Ports conflict and URL configuration
+Access the app:
+- React UI: `http://localhost:5173`
+- Swagger Docs: `http://localhost:8088/swagger-ui.html`, `:8089/swagger-ui.html`
+- RabbitMQ: `http://localhost:15672` (user/pass: guest/guest)
+- Eureka: `http://localhost:8761`
 
-- **Ports are defined in docker-compose and services application.yml, if you need to update any ports look in these 3 files**
-- **Client side(React), ports and url are defined in .env, for local use localhost unless changed in the above files then for deployment use necessary URLa**
+---
+
+## 👤 Admin Credentials
+
+| Email              | Password  |
+| admin@microbank.com | admin123  |
+
+---
+
+## 🔐 Security Features
+
+- JWT token validation across services
+- Stateless sessions using Spring Security
+- Blacklist enforcement through RabbitMQ
+- Rate-limiting enabled on API gateway
+- Input validation with Bean Validation annotations
+- Global exception handler with custom response codes
+
+---
+
+## Maintainer
+
+**Timothy Moswa**  
+Email: `timothymoswa@gmail.com`  
+GitHub: [github.com/tmoswa](https://github.com/tmoswa)
+
+---
+
+> Built with Spring Boot, Docker, and by a passionate Java backend developer!

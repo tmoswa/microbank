@@ -10,6 +10,8 @@ import com.microbank.banking_service.model.Account;
 import com.microbank.banking_service.model.Transaction;
 import com.microbank.banking_service.repository.AccountRepository;
 import com.microbank.banking_service.repository.TransactionRepository;
+import jakarta.annotation.PostConstruct;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.dao.DataIntegrityViolationException;
 
@@ -35,7 +37,6 @@ public class AccountService {
 
     public void blacklistClient(Long clientId) {
         blacklistedClients.add(clientId);
-        System.out.println("Client blacklisted: " + clientId);
     }
 
     public void removeFromBlacklist(Long clientId) {
@@ -43,12 +44,17 @@ public class AccountService {
     }
 
     public boolean isBlacklisted(Long clientId) {
+        System.out.println("Checking if client " + clientId + " is blacklisted: " + blacklistedClients.contains(clientId));
         return blacklistedClients.contains(clientId);
     }
 
     public Account getClientAccount(String email) {
-        UserDto client = userClient.getUserByEmail(email);
-        Long clientId = client.getId();
+        UserDto client = getCachedUserByEmail(email);
+        Long clientId = client.getClientID();
+
+        if (isBlacklisted(clientId)) {
+            throw new BlacklistedClientException("Access denied: You are blacklisted.");
+        }
 
         return accountRepo.findByClientId(clientId).orElseGet(() -> {
             Account newAccount = new Account();
@@ -74,9 +80,9 @@ public class AccountService {
         if (amount <= 0) throw new InvalidAmountException("Amount must be positive");
 
         Account account = getClientAccount(email);
-        UserDto user = userClient.getUserByEmail(email);
+        UserDto user = getCachedUserByEmail(email);
 
-        Long clientId = user.getId();
+        Long clientId = user.getClientID();
 
         if (isBlacklisted(clientId)) {
             throw new BlacklistedClientException("Transaction blocked: you are blacklisted.");
@@ -100,6 +106,21 @@ public class AccountService {
         tx.setTimestamp(LocalDateTime.now());
         transactionRepo.save(tx);
         accountRepo.save(account);
+    }
+
+    @Cacheable(value = "userCache", key = "#email")
+    public UserDto getCachedUserByEmail(String email) {
+        return userClient.getUserByEmail(email);
+    }
+
+    @PostConstruct
+    public void preloadBlacklist() {
+        try {
+            List<Long> blacklisted = userClient.getBlacklistedClientIds();
+            blacklistedClients.addAll(blacklisted);
+        } catch (Exception e) {
+            System.err.println("Failed to preload blacklist: " + e.getMessage());
+        }
     }
 
 }

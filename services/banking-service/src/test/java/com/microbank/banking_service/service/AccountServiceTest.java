@@ -38,7 +38,7 @@ public class AccountServiceTest {
         String email = "john@example.com";
         double depositAmount = 100.0;
 
-        UserDto user = new UserDto(1L,"jonh@gmail.com" ,"john", false);
+        UserDto user = new UserDto(1L,"jonh@gmail.com" ,"john", false, 1L);
         Account account = new Account();
         account.setId(1L);
         account.setClientId(1L);
@@ -58,7 +58,7 @@ public class AccountServiceTest {
     void testWithdrawWithInsufficientFundsThrowsException() {
         String email = "jane@example.com";
 
-        UserDto user = new UserDto(2L,"jane@gmail.com", "jane", false);
+        UserDto user = new UserDto(2L,"jane@gmail.com", "jane", false, 2L);
         Account account = new Account();
         account.setId(2L);
         account.setClientId(2L);
@@ -79,7 +79,7 @@ public class AccountServiceTest {
         String email = "evil@hacker.com";
 
         // User is not blacklisted via DTO anymore — just basic info
-        UserDto user = new UserDto(3L, "evil@gmail.com", "evil", false);
+        UserDto user = new UserDto(3L, "evil@gmail.com", "evil", false, 3L);
 
         Account account = new Account();
         account.setId(3L);

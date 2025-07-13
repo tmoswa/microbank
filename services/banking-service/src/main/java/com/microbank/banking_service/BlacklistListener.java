@@ -13,7 +13,6 @@ public class BlacklistListener {
         this.accountService = accountService;
     }
 
-    @RabbitListener(queues = "blacklist-queue")
     @RabbitListener(queues = RabbitMQConfig.BLACKLIST_QUEUE)
     public void handleBlacklistEvent(BlacklistStatusMessage message) {
         Long clientId = message.getClientId();
