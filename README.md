@@ -131,6 +131,9 @@ Auto-generated using SpringDoc and Swagger UI:
 ```bash
 git clone https://github.com/tmoswa/microbank.git
 cd microbank
+cd services/eureka-server
+mvn clean package
+cd ../../
 docker-compose up --build
 ```
 
