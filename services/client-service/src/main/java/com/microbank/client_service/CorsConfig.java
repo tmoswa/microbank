@@ -17,8 +17,8 @@ public class CorsConfig {
 
         config.setAllowedOrigins(Arrays.asList(
                 "http://localhost:5173",
-                "http://ec2-13-48-138-157.eu-north-1.compute.amazonaws.com:5173",
-                "http://13.48.138.157:5173",
+                "http://ec2-16-170-222-142.eu-north-1.compute.amazonaws.com:5173",
+                "http://16.170.222.142:5173",
                 "https://ed1f8fdd4d70.ngrok-free.app"
         ));
 
